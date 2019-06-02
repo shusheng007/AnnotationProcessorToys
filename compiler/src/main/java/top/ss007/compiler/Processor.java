@@ -52,15 +52,10 @@ public class Processor extends AbstractProcessor {
 
     @Override
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
-        if (annotations == null || annotations.isEmpty()) {
-            return false;
-        }
-
         if (!roundEnv.processingOver()) {
-            annotationClassMap.clear();
             buildAnnotatedElement(roundEnv, BindView.class);
             buildAnnotatedElement(roundEnv, OnClick.class);
-
+        }else {
             for (Map.Entry<String, List<Element>> entry : annotationClassMap.entrySet()) {
                 String packageName = entry.getKey().split("_")[0];
                 String typeName = entry.getKey().split("_")[1];
@@ -94,8 +89,8 @@ public class Processor extends AbstractProcessor {
                         .build());
 
                 /*创建方法bindViews(MainActivity activity)
-                * private void bindViews(MainActivity activity) {}
-                */
+                 * private void bindViews(MainActivity activity) {}
+                 */
                 MethodSpec.Builder bindViewsMethodBuilder = MethodSpec
                         .methodBuilder(NameStore.Method.BIND_VIEWS)
                         .addModifiers(Modifier.PRIVATE)
@@ -103,8 +98,8 @@ public class Processor extends AbstractProcessor {
                         .addParameter(className, NameStore.Variable.ANDROID_ACTIVITY);
 
                 /*增加方法体
-                * activity.tvHello = (TextView)activity.findViewById(2131165326);
-                * */
+                 * activity.tvHello = (TextView)activity.findViewById(2131165326);
+                 * */
                 for (VariableElement variableElement : ElementFilter.fieldsIn(entry.getValue())) {
                     BindView bindView = variableElement.getAnnotation(BindView.class);
                     if (bindView != null) {
